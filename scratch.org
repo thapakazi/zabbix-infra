@@ -1,0 +1,68 @@
+#+DATE: Wednesday, Nov 06 2019
+
+* Zabbix components:
+  - Server
+  - Data Storage
+  - Web interface
+  - Proxy
+  - Agent
+
+* Tryout
+  - quick_pg
+    #+begin_src bash
+quick_pg() {
+	[ ! -f /tmp/secrets ] && cat > /tmp/secrets <<EOF
+POSTGRES_DB=zabbix
+POSTGRES_USER=zabbix
+POSTGRES_PASSWORD=helloworld
+EOF
+	docker run -d --rm -it --env-file /tmp/secrets -p5432:5432 postgres:11-alpine
+}
+quick_pg
+    #+end_src
+
+    #+RESULTS:
+    : a7e2413550f532e2ec1e912af2ced173eaf1d6690924b9b0629336c1a5fde4cc
+
+  - feed data
+    #+begin_src bash
+for i in schema data images; do
+    cat /usr/share/zabbix-server/postgresql/$i.sql | psql -U zabbix -d zabbix -h localhost
+done
+    #+end_src
+
+  - start server
+    #+begin_src bash
+    sudo systemctl start zabbix-server-pgsql.service
+    #+end_src
+    #+begin_src bash
+    sudo systemctl status zabbix-server-pgsql.service
+    #+end_src
+    #+RESULTS:
+
+  - start frontned
+    #+begin_src bash
+docker run --name zabbix-web-nginx-pgsql -e DB_SERVER_HOST="172.17.0.3" -e POSTGRES_USER="zabbix" -e POSTGRES_PASSWORD="helloworld" -e ZBX_SERVER_HOST="192.168.1.79" -e PHP_TZ="Asia/Kathmandu" -d zabbix/zabbix-web-nginx-pgsql:latest
+    #+end_src
+
+    #+RESULTS:
+    : 88cc7ce6564ded34ee37affdd402da3457d606313ab0d84f0f2223ab42ec6b14
+
+  - start agent
+    #+begin_src bash
+docker run --name agent1 -e ZBX_HOSTNAME="agent1-host1" -e ZBX_SERVER_HOST="172.17.0.1" -d zabbix/zabbix-agent:latest
+
+  #+end_src>
+
+* Getting started
+  - running up with docker-compose
+  - adding a new host
+
+* Assignment
+  - writing Dockerfile
+
+* Res
+  - http://users.ox.ac.uk/~clas0415//blog/2015/12/18/zabbix-password-reset.html
+  - https://github.com/monitoringartist
+  - http://www.tadeubernacchi.com.br/google-cloud-kubernetes-zabbix/
+

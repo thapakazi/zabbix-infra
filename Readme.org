@@ -1,0 +1,9 @@
+#+TITLE: zabbix - infra
+#+DATE: Monday, Nov 08 2019
+#+DESCRIPTION: zabbix infra readme
+
+*** Check [[./scratch.org][scratch.org]] to explore zabbix
+
+*** Message Note:
+  Because of my injury on hand, I couldn't complete this project. I could only get back to this after the recovery. Thanks
+
